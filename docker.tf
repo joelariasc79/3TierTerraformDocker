@@ -2,12 +2,12 @@ provider "aws" {
   region = "us-west-1"
 }
 
-resource "aws_instance" "docker_backEnd" {
+resource "aws_instance" "database" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.micro"
 
   tags = {
-    Name = "Docker-BackEnd"
+    Name = "database"
   }
 }
 
@@ -27,6 +27,10 @@ resource "aws_instance" "docker_frontEnd" {
   tags = {
     Name = "Docker-FrontEnd"
   }
+}
+
+output "database_public_ip" {
+  value = aws_instance.database
 }
 
 output "docker_backEnd_public_ip" {
