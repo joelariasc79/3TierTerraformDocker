@@ -1,16 +1,22 @@
+variable "public_key" {
+  description = "The public key to use for SSH access"
+  type        = string
+}
+
 provider "aws" {
   region = "us-west-1"
 }
 
+
 resource "aws_key_pair" "my_key" {
   key_name   = "my-key-pair"
-  public_key = file("~/.ssh/id_rsa_jenkins.pub")
+  public_key = var.public_key
 }
 
 resource "aws_instance" "database" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.micro"
-  key_name = "my-key-pair"
+  key_name      = aws_key_pair.my_key.key_name
 
   tags = {
     Name = "database"
@@ -48,7 +54,7 @@ resource "aws_security_group" "database_sg" {
 resource "aws_instance" "docker_back_end" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.micro"
-  key_name = "my-key-pair"
+  key_name      = aws_key_pair.my_key.key_name
 
   tags = {
     Name = "docker-back-end"
@@ -100,7 +106,7 @@ resource "aws_security_group" "docker_back_end_sg" {
 resource "aws_instance" "docker_front_end" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.medium"
-  key_name = "my-key-pair"
+  key_name      = aws_key_pair.my_key.key_name
 
   tags = {
     Name = "docker-front-end"
@@ -108,6 +114,7 @@ resource "aws_instance" "docker_front_end" {
 
   vpc_security_group_ids = [aws_security_group.docker_front_end_sg.id]
 }
+
 
 resource "aws_security_group" "docker_front_end_sg" {
   name        = "docker-front-end-sg"
