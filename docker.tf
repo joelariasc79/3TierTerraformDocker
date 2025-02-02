@@ -13,6 +13,11 @@ resource "aws_key_pair" "my_key" {
   public_key = var.public_key
 }
 
+# Get the default VPC
+data "aws_vpc" "default" {
+  default = true
+}
+
 resource "aws_instance" "database" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.micro"
@@ -28,17 +33,18 @@ resource "aws_instance" "database" {
 resource "aws_security_group" "database_sg" {
   name        = "database-sg"
   description = "Security group for database instance"
+  vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    from_port   = 3306
-    to_port     = 3306
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 3306
+    to_port     = 3306
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -50,6 +56,7 @@ resource "aws_security_group" "database_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 
 # resource "aws_instance" "docker_back_end" {
 #   ami           = "ami-07d2649d67dbe8900"
@@ -66,6 +73,7 @@ resource "aws_security_group" "database_sg" {
 # resource "aws_security_group" "docker_back_end_sg" {
 #   name        = "docker-back-end-sg"
 #   description = "Security group for docker backend instance"
+#   vpc_id      = data.aws_vpc.default.id
 #
 #   ingress {
 #     from_port   = 80
@@ -119,6 +127,7 @@ resource "aws_security_group" "database_sg" {
 # resource "aws_security_group" "docker_front_end_sg" {
 #   name        = "docker-front-end-sg"
 #   description = "Security group for docker frontend instance"
+#   vpc_id      = data.aws_vpc.default.id
 #
 #   ingress {
 #     from_port   = 80
