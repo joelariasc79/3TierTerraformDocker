@@ -9,6 +9,34 @@ resource "aws_instance" "database" {
   tags = {
     Name = "database"
   }
+
+  vpc_security_group_ids = [aws_security_group.database_sg.id]
+}
+
+resource "aws_security_group" "database_sg" {
+  name        = "database-sg"
+  description = "Security group for database instance"
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_instance" "docker_back_end" {
@@ -18,6 +46,48 @@ resource "aws_instance" "docker_back_end" {
   tags = {
     Name = "docker-back-end"
   }
+
+  vpc_security_group_ids = [aws_security_group.docker_back_end_sg.id]
+}
+
+resource "aws_security_group" "docker_back_end_sg" {
+  name        = "docker-back-end-sg"
+  description = "Security group for docker backend instance"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_instance" "docker_front_end" {
@@ -26,6 +96,42 @@ resource "aws_instance" "docker_front_end" {
 
   tags = {
     Name = "docker-front-end"
+  }
+
+  vpc_security_group_ids = [aws_security_group.docker_front_end_sg.id]
+}
+
+resource "aws_security_group" "docker_front_end_sg" {
+  name        = "docker-front-end-sg"
+  description = "Security group for docker frontend instance"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 4200
+    to_port     = 4200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
