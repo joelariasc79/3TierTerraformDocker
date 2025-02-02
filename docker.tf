@@ -2,9 +2,15 @@ provider "aws" {
   region = "us-west-1"
 }
 
+resource "aws_key_pair" "my_key" {
+  key_name   = "my-key-pair"
+  public_key = file("~/.ssh/id_rsa_jenkins.pub")
+}
+
 resource "aws_instance" "database" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.micro"
+  key_name = "my-key-pair"
 
   tags = {
     Name = "database"
@@ -42,6 +48,7 @@ resource "aws_security_group" "database_sg" {
 resource "aws_instance" "docker_back_end" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.micro"
+  key_name = "my-key-pair"
 
   tags = {
     Name = "docker-back-end"
@@ -93,6 +100,7 @@ resource "aws_security_group" "docker_back_end_sg" {
 resource "aws_instance" "docker_front_end" {
   ami           = "ami-07d2649d67dbe8900"
   instance_type = "t2.medium"
+  key_name = "my-key-pair"
 
   tags = {
     Name = "docker-front-end"
