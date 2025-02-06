@@ -120,6 +120,11 @@ resource "aws_instance" "docker_front_end" {
     Name = "docker-front-end"
   }
 
+  root_block_device {
+    volume_size = 12
+    volume_type = "gp2"
+  }
+
   vpc_security_group_ids = [aws_security_group.docker_front_end_sg.id]
 }
 
